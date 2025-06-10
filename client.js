@@ -22,11 +22,6 @@ reader.on('card-inserted', async (card) => {
     try {
         console.log('📇 Card Inserted:', card);
 
-        if (!card.isValid()) {
-            console.error('❌ Invalid Card');
-            return;
-        }
-
         const cid = await card.getCid();
         const thName = await card.getNameTH();
         const enName = await card.getNameEN();
