@@ -9,12 +9,12 @@
     <pre id="output">รอสแกนบัตร...</pre>
 
     <script>
-        const ws = new WebSocket('ws://localhost:3001');
+        const ws = new WebSocket('ws://192.168.1.157:3001');
 
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             document.getElementById('output').innerText = JSON.stringify(data, null, 2);
         };
     </script>
-</body>
+</bod.s 
 </html>
