@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Smart Card Viewer</title>
 </head>
+
 <body>
     <h2>ข้อมูลจากบัตรประชาชน</h2>
     <pre id="output">รอสแกนบัตร...</pre>
 
     <script>
-        const ws = new WebSocket('ws://192.168.1.157:3001');
+        const ws = new WebSocket('ws://api.localhost.lan:3001');
 
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        // ws.onmessage = (event) => {
+        //     const data = JSON.parse(event.data);
+        //     document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        // };
+
+        ws.onmessage = async (event) => {
+            const encryptedPayload = event.data;
+
+            const res = await fetch('https://api.localhost.lan:3443/decrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encrypted: encryptedPayload })
+            });
+
+            const result = await res.json();
+            if (result.success) {
+                output.textContent = JSON.stringify(result.data, null, 2);
+            } else {
+                errorBox.textContent = '❌ ถอดรหัสไม่สำเร็จ: ' + result.message;
+            }
         };
     </script>
-</bod.s 
-</html>
+    </bod.s </html>

@@ -20,7 +20,7 @@ wss.on('connection', (socket) => {
         }
         // log the data to the console
         console.log('📩 Data:', data)
-        ;
+            ;
         // broadcast to all frontend clients if needed
         wss.clients.forEach((client) => {
             if (client !== socket && client.readyState === WebSocket.OPEN) {
