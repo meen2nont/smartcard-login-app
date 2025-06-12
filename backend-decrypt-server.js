@@ -14,33 +14,45 @@ app.use(express.json());
 const ENCRYPT_KEY = Buffer.from(process.env.ENCRYPT_KEY, 'hex'); // 32 bytes
 
 function decrypt(encrypted) {
-  const [ivHex, dataHex] = encrypted.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const encryptedText = Buffer.from(dataHex, 'hex');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPT_KEY, iv);
-  const decrypted = Buffer.concat([
-    decipher.update(encryptedText),
-    decipher.final()
-  ]);
-  return decrypted.toString();
+    try {
+        const [ivHex, dataHex] = encrypted.split(':');
+        const iv = Buffer.from(ivHex, 'hex');
+        const encryptedText = Buffer.from(dataHex, 'hex');
+
+        console.log('🔑 Decrypting with key:', ENCRYPT_KEY.toString('hex'))
+        console.log('🔐 IV:', ivHex)
+        console.log('🔐 Encrypted Text:', dataHex);
+        if (iv.length !== 16) {
+            throw new Error('Invalid IV length');
+        }
+        const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPT_KEY, iv);
+        const decrypted = Buffer.concat([
+            decipher.update(encryptedText),
+            decipher.final()
+        ]);
+        return decrypted.toString();
+    } catch (err) {
+        console.error('Decryption error:', err);
+        throw new Error('Decryption failed');
+    }
 }
 
 app.post('/decrypt', (req, res) => {
-  try {
-    const { encrypted } = req.body;
-    const decryptedJson = decrypt(encrypted);
-    const data = JSON.parse(decryptedJson);
-    res.json({ success: true, data });
-  } catch (err) {
-    res.status(400).json({ success: false, message: 'Decrypt failed', error: err.message });
-  }
+    try {
+        const { encrypted } = req.body;
+        const decryptedJson = decrypt(encrypted);
+        const data = JSON.parse(decryptedJson);
+        res.json({ success: true, data });
+    } catch (err) {
+        res.status(400).json({ success: false, message: 'Decrypt failed', error: err.message });
+    }
 });
 
 const httpsServer = https.createServer({
-  key: fs.readFileSync('./certs/key.pem'),
-  cert: fs.readFileSync('./certs/cert.pem')
+    key: fs.readFileSync('./certs/key.pem'),
+    cert: fs.readFileSync('./certs/cert.pem')
 }, app);
 
 httpsServer.listen(3443, () => {
-  console.log('🔐 Backend Decrypt Server running at https://api.localhost.lan:3443');
+    console.log('🔐 Backend Decrypt Server running at https://api.localhost.lan:3443');
 });
