@@ -53,7 +53,7 @@ wss.on('connection', (socket) => {
             data = data.toString();
         }
         // log the data to the console
-        console.log('📩 Data:', data)
+        // console.log('📩 Data:', data)
 
         const decryptedJson = decrypt(data);
         const dataJSON = JSON.parse(decryptedJson);
