@@ -29,9 +29,6 @@ reader.on('device-activated', (event) => {
     console.log('✅ Device Activated:', event.name);
 });
 
-reader.on('device-deactivated', (event) => {
-    console.log('❌ Device Deactivated:', event.name);
-});
 
 // Get External IP address
 async function getExternalIp() {
@@ -106,4 +103,8 @@ reader.on('card-inserted', async (card) => {
 
 reader.on('card-removed', (event) => {
     console.log('❌ Card Removed:', event.name);
+});
+
+reader.on('error', (err) => {
+    console.error('❌ Error:', err);
 });
